@@ -3,11 +3,11 @@ module github.com/airohq/agent-harnesses/jev
 go 1.27.0
 
 // Kagent's module pins Agent Substrate to kagent's fork the same way.
-replace github.com/agent-substrate/substrate => github.com/kagent-dev/substrate v0.4.0-alpha1
+replace github.com/agent-substrate/substrate => github.com/kagent-dev/substrate v0.5.0-alpha2
 
 require (
 	github.com/a2aproject/a2a-go/v2 v2.6.0
-	github.com/kagent-dev/kagent/go v0.0.0-20261007172928-6c4cfb2bc1f3
+	github.com/kagent-dev/kagent/go v0.0.0-20261013160358-a6175df0f628
 )
 
 require (
