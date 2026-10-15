@@ -1,0 +1,64 @@
+name: toolsets
+
+on:
+  push:
+    branches: [main]
+    paths: [toolsets/**, .github/workflows/toolsets.yml]
+  pull_request:
+    paths: [toolsets/**, .github/workflows/toolsets.yml]
+
+permissions:
+  contents: read
+
+jobs:
+  # Builds each Kagent harness image with a toolset added, and publishes it
+  # from main as ghcr.io/airohq/agent-harnesses/<name>, tagged with the commit.
+  # Kagent runs harness images by digest, so nothing uses a moving tag. When
+  # Kagent upgrades, update the harness digests below.
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        include:
+          - name: claude-go
+            toolset: go
+            harness: ghcr.io/kagent-dev/kagent/claude-harness:1.0.0-alpha13@sha256:ceaf7caa7366b96c11cb85ad0bad435a35fcd2704c657b895ee3e73978045db8
+            check: go version && claude --version
+          - name: codex-go
+            toolset: go
+            harness: ghcr.io/kagent-dev/kagent/codex-harness:1.0.0-alpha13@sha256:04788e85c9e1ef98b3f568b9aa749a5e16d2250d115449332dba98baa26305fa
+            check: go version && codex --version
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker/setup-qemu-action@v4
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/login-action@v4
+        if: github.event_name == 'push'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      # Checks the tools run on the runner's platform before anything is
+      # published.
+      - uses: docker/build-push-action@v7
+        with:
+          context: toolsets/${{ matrix.toolset }}
+          build-args: HARNESS=${{ matrix.harness }}
+          load: true
+          tags: ${{ matrix.name }}:test
+      - run: docker run --rm --entrypoint sh ${{ matrix.name }}:test -c '${{ matrix.check }}'
+      - id: build
+        if: github.event_name == 'push'
+        uses: docker/build-push-action@v7
+        with:
+          context: toolsets/${{ matrix.toolset }}
+          build-args: HARNESS=${{ matrix.harness }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ghcr.io/${{ github.repository }}/${{ matrix.name }}:sha-${{ github.sha }}
+          labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
+      - if: github.event_name == 'push'
+        run: echo "Image ghcr.io/${{ github.repository }}/${{ matrix.name }}@${{ steps.build.outputs.digest }}" >> "$GITHUB_STEP_SUMMARY"
