@@ -29,12 +29,14 @@ const (
 )
 
 // config is the part of KAGENT_CONFIG_JSON the harness uses: the system
-// prompt, and the model from the agent's ModelConfig. An OpenAI ModelConfig
-// whose base URL is TypeSafe's API makes Kagent's egress gateway add the API
-// key, so the key never enters the sandbox.
+// prompt, the model from the agent's ModelConfig, and the Kagent controller
+// that stores the A2A tasks. An OpenAI ModelConfig whose base URL is
+// TypeSafe's API makes Kagent's egress gateway add the API key, so the key
+// never enters the sandbox.
 type config struct {
-	Instruction string `json:"instruction"`
-	Model       struct {
+	Instruction     string `json:"instruction"`
+	ControlPlaneURL string `json:"control_plane_url"`
+	Model           struct {
 		Model   string `json:"model"`
 		BaseURL string `json:"base_url"`
 	} `json:"model"`
@@ -73,7 +75,7 @@ func run(logger *slog.Logger) error {
 		return err
 	}
 	logger.Info("jev harness starting", "model", client.Model, "baseURL", client.BaseURL)
-	application, err := app.New(app.AppConfig{AgentCard: card, Port: privatePort, AppName: card.Name, Logger: logger}, executor)
+	application, err := app.New(app.AppConfig{AgentCard: card, Port: privatePort, AppName: card.Name, ControlPlaneURL: cfg.ControlPlaneURL, Logger: logger}, executor)
 	if err != nil {
 		return fmt.Errorf("construct A2A app: %w", err)
 	}
