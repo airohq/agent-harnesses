@@ -34,12 +34,15 @@ const (
 // TypeSafe's API makes Kagent's egress gateway add the API key, so the key
 // never enters the sandbox.
 type config struct {
-	Instruction     string `json:"instruction"`
-	ControlPlaneURL string `json:"control_plane_url"`
-	Model           struct {
+	Instruction string `json:"instruction"`
+	Model       struct {
 		Model   string `json:"model"`
 		BaseURL string `json:"base_url"`
 	} `json:"model"`
+	// Kagent gives a BYO harness its process settings under "runtime".
+	Runtime struct {
+		ControlPlaneURL string `json:"control_plane_url"`
+	} `json:"runtime"`
 }
 
 func main() {
@@ -75,7 +78,7 @@ func run(logger *slog.Logger) error {
 		return err
 	}
 	logger.Info("jev harness starting", "model", client.Model, "baseURL", client.BaseURL)
-	application, err := app.New(app.AppConfig{AgentCard: card, Port: privatePort, AppName: card.Name, ControlPlaneURL: cfg.ControlPlaneURL, Logger: logger}, executor)
+	application, err := app.New(app.AppConfig{AgentCard: card, Port: privatePort, AppName: card.Name, ControlPlaneURL: cfg.Runtime.ControlPlaneURL, Logger: logger}, executor)
 	if err != nil {
 		return fmt.Errorf("construct A2A app: %w", err)
 	}
