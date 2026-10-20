@@ -1,30 +1,44 @@
 package main
 
 import (
-	"encoding/json"
 	"testing"
 
-	"github.com/kagent-dev/kagent/go/api/adk"
+	kagentconfig "github.com/kagent-dev/kagent/go/adk/pkg/config"
+	configv1 "github.com/kagent-dev/kagent/go/api/gen/kagent/config/v1"
 )
 
-// The harness reads Kagent's config with its own struct, so this checks it
-// against the JSON Kagent writes for a BYO harness.
+// Checks that the harness finds its settings in the JSON Kagent writes for a
+// BYO harness with an OpenAI ModelConfig.
 func TestConfigReadsKagentBYOConfig(t *testing.T) {
-	data, err := json.Marshal(adk.AgentConfig{
-		Instruction: "Classify this issue.",
-		Runtime:     &adk.RuntimeConfig{ControlPlaneURL: "http://kagent-controller.kagent.svc:8083"},
+	data, err := kagentconfig.Marshal(&configv1.ADKConfig{
+		Runtime: &configv1.ADKRuntimeConfig{ControlPlaneUrl: "http://kagent-controller.kagent.svc.cluster.local:8083"},
+		Agent: &configv1.ADKAgentConfig{
+			Name:        "judge",
+			Instruction: "Classify this issue.",
+			Model: &configv1.ADKModelConfig{
+				Model:    "jev-latest",
+				Provider: &configv1.ADKModelConfig_Openai{Openai: &configv1.ADKOpenAI{BaseUrl: "http://llm-gateway/typesafe"}},
+			},
+		},
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
-	var cfg config
-	if err := json.Unmarshal(data, &cfg); err != nil {
+	var cfg configv1.ADKConfig
+	if err := kagentconfig.Unmarshal(data, &cfg); err != nil {
 		t.Fatal(err)
 	}
-	if cfg.Instruction != "Classify this issue." {
-		t.Errorf("instruction = %q", cfg.Instruction)
+	agent := cfg.GetAgent()
+	if got := agent.GetInstruction(); got != "Classify this issue." {
+		t.Errorf("instruction = %q", got)
 	}
-	if cfg.Runtime.ControlPlaneURL != "http://kagent-controller.kagent.svc:8083" {
-		t.Errorf("control plane URL = %q", cfg.Runtime.ControlPlaneURL)
+	if got := agent.GetModel().GetModel(); got != "jev-latest" {
+		t.Errorf("model = %q", got)
+	}
+	if got := agent.GetModel().GetOpenai().GetBaseUrl(); got != "http://llm-gateway/typesafe" {
+		t.Errorf("base URL = %q", got)
+	}
+	if got := cfg.GetRuntime().GetControlPlaneUrl(); got != "http://kagent-controller.kagent.svc.cluster.local:8083" {
+		t.Errorf("control plane URL = %q", got)
 	}
 }
