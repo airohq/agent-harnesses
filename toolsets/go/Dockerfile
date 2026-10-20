@@ -14,5 +14,9 @@ RUN apk add --no-cache build-base curl make
 ENV PATH=/usr/local/go/bin:/data/go/bin:$PATH \
     GOPATH=/data/go \
     GOTOOLCHAIN=local
+# Claude Code's managed settings, which apply even though Kagent's Claude
+# harness starts it with --setting-sources "": no attribution in commits and
+# pull requests. Codex ignores the file.
+COPY claude-managed-settings.json /etc/claude-code/managed-settings.json
 # Back to the harness's own user; the entrypoint stays the harness's.
 USER 65532:65532

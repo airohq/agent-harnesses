@@ -29,7 +29,13 @@ it replaces `workload.image` in a Harness of the same kind (`claude: {}` or
 
 | Toolset | Adds | Images |
 | --- | --- | --- |
+| [base](toolsets/base/) | Nothing | `ghcr.io/airohq/agent-harnesses/claude` |
 | [go](toolsets/go/) | Go, a C compiler for cgo and `-race`, `make`, `curl` | `ghcr.io/airohq/agent-harnesses/claude-go`, `ghcr.io/airohq/agent-harnesses/codex-go` |
+
+Every toolset image also carries Claude Code managed settings
+([`claude-managed-settings.json`](toolsets/claude-managed-settings.json)) that
+turn off commit and pull request attribution. Kagent's Claude harness ignores
+user settings, so managed settings are the only place for them.
 
 The [toolsets workflow](.github/workflows/toolsets.yml) lists the images: a
 name, a toolset and the Kagent harness image it builds on, pinned by digest.
