@@ -37,13 +37,8 @@ Every toolset image also carries Claude Code managed settings
 turn off commit and pull request attribution. Kagent's Claude harness ignores
 user settings, so managed settings are the only place for them.
 
-They also carry a git credential helper,
-[`git-credential-egress`](toolsets/git-credential-egress), that answers every
-host with a placeholder. Kagent's egress gateway replaces the `Authorization`
-header of a request to a host that has a credential, but never adds one. Git
-asks the helper only after a host answers 401, so anonymous clones send no
-header, and authenticated ones send the placeholder for the gateway to
-replace.
+Git needs nothing from the image: agentic-sdlc configures it in every
+Harness's env (airohq/agentic-sdlc#115).
 
 The [toolsets workflow](.github/workflows/toolsets.yml) lists the images: a
 name, a toolset and the Kagent harness image it builds on, pinned by digest.
