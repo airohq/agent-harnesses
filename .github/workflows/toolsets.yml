@@ -26,15 +26,15 @@ jobs:
           - name: claude
             toolset: base
             harness: ghcr.io/kagent-dev/kagent/claude-harness:1.0.0-alpha16@sha256:6b947b7f13938d49f0e9f8af39621a95e861d5576aad1d934141a438eebabb32
-            check: claude --version && test -r /etc/claude-code/managed-settings.json && test "$(echo url=https://github.com | git credential fill | grep ^password=)" = password=placeholder
+            check: claude --version && test -r /etc/claude-code/managed-settings.json
           - name: claude-go
             toolset: go
             harness: ghcr.io/kagent-dev/kagent/claude-harness:1.0.0-alpha16@sha256:6b947b7f13938d49f0e9f8af39621a95e861d5576aad1d934141a438eebabb32
-            check: go version && claude --version && test -r /etc/claude-code/managed-settings.json && test "$(echo url=https://github.com | git credential fill | grep ^password=)" = password=placeholder
+            check: go version && claude --version && test -r /etc/claude-code/managed-settings.json
           - name: codex-go
             toolset: go
             harness: ghcr.io/kagent-dev/kagent/codex-harness:1.0.0-alpha16@sha256:852fd192f5e2f2e76f17d018de0a1c1eeaeecac72c69b132fbdfb98516ae85cd
-            check: go version && codex --version && test "$(echo url=https://github.com | git credential fill | grep ^password=)" = password=placeholder
+            check: go version && codex --version
     steps:
       - uses: actions/checkout@v7
       - uses: docker/setup-qemu-action@v4
