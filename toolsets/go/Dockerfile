@@ -18,12 +18,10 @@ ENV PATH=/usr/local/go/bin:/data/go/bin:$PATH \
 # harness starts it with --setting-sources "": no attribution in commits and
 # pull requests. Codex ignores the file.
 COPY claude-managed-settings.json /etc/claude-code/managed-settings.json
-# Let git over HTTPS to github.com authenticate through Substrate's egress
-# gateway. The gateway only replaces a header the request already carries, so
-# git sends this inert placeholder; when the agent opens the github network
-# preset, the gateway swaps it for the repository's installation token. The
-# real token never enters the sandbox (airohq/agentic-sdlc#81).
-RUN git config --system http.https://github.com/.extraHeader \
-      "Authorization: Basic eC1hY2Nlc3MtdG9rZW46cGxhY2Vob2xkZXI="
+# Let git over HTTPS authenticate through Substrate's egress gateway, on any
+# host: after a 401, git sends the helper's placeholder, which the gateway
+# replaces with the credential the agent's auth chooses for that host.
+COPY --chmod=755 git-credential-egress /usr/local/bin/git-credential-egress
+RUN git config --system credential.helper egress
 # Back to the harness's own user; the entrypoint stays the harness's.
 USER 65532:65532
