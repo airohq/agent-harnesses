@@ -23,10 +23,6 @@ jobs:
     strategy:
       matrix:
         include:
-          - name: claude
-            toolset: base
-            harness: ghcr.io/kagent-dev/kagent/claude-harness:1.0.0-alpha16@sha256:6b947b7f13938d49f0e9f8af39621a95e861d5576aad1d934141a438eebabb32
-            check: claude --version && test -r /etc/claude-code/managed-settings.json
           - name: claude-go
             toolset: go
             harness: ghcr.io/kagent-dev/kagent/claude-harness:1.0.0-alpha16@sha256:6b947b7f13938d49f0e9f8af39621a95e861d5576aad1d934141a438eebabb32
