@@ -29,7 +29,6 @@ it replaces `workload.image` in a Harness of the same kind (`claude: {}` or
 
 | Toolset | Adds | Images |
 | --- | --- | --- |
-| [base](toolsets/base/) | Nothing | `ghcr.io/airohq/agent-harnesses/claude` |
 | [go](toolsets/go/) | Go, a C compiler for cgo and `-race`, `make`, `curl` | `ghcr.io/airohq/agent-harnesses/claude-go`, `ghcr.io/airohq/agent-harnesses/codex-go` |
 
 Every toolset image also carries Claude Code managed settings
