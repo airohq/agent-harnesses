@@ -15,7 +15,9 @@ import (
 
 	a2atype "github.com/a2aproject/a2a-go/v2/a2a"
 	"github.com/kagent-dev/kagent/go/adk/pkg/app"
+	"github.com/kagent-dev/kagent/go/adk/pkg/bootstrap"
 	kagentconfig "github.com/kagent-dev/kagent/go/adk/pkg/config"
+	contract "github.com/kagent-dev/kagent/go/api/bootstrap"
 	configv1 "github.com/kagent-dev/kagent/go/api/gen/kagent/config/v1"
 	"github.com/kagent-dev/kagent/go/harness/runtime"
 	runtimea2a "github.com/kagent-dev/kagent/go/harness/runtime/a2a"
@@ -43,19 +45,17 @@ func main() {
 }
 
 func run(logger *slog.Logger) error {
-	// KAGENT_CONFIG_JSON holds the system prompt, the model from the agent's
-	// ModelConfig, and the Kagent controller that stores the A2A tasks. An
-	// OpenAI ModelConfig whose base URL is TypeSafe's API makes Kagent's
-	// egress gateway add the API key, so the key never enters the sandbox.
-	var cfg configv1.ADKConfig
-	if err := kagentconfig.Unmarshal([]byte(os.Getenv("KAGENT_CONFIG_JSON")), &cfg); err != nil {
-		return fmt.Errorf("decode KAGENT_CONFIG_JSON: %w", err)
+	// Kagent's bootstrap bundle holds the system prompt, the model from the
+	// agent's ModelConfig, the Kagent controller that stores the A2A tasks, and
+	// the agent card. It is fetched once and kept on the durable /data volume,
+	// as Kagent's own harnesses do. An OpenAI ModelConfig whose base URL is
+	// TypeSafe's API makes Kagent's egress gateway add the API key, so the key
+	// never enters the sandbox.
+	cfg, card, err := loadBundle(context.Background(), os.Getenv, contract.Directory)
+	if err != nil {
+		return err
 	}
 	agent := cfg.GetAgent()
-	var card a2atype.AgentCard
-	if err := json.Unmarshal([]byte(os.Getenv("KAGENT_AGENT_CARD_JSON")), &card); err != nil || card.Name == "" {
-		return fmt.Errorf("KAGENT_AGENT_CARD_JSON needs an agent card with a name: %v", err)
-	}
 	client := &Client{
 		BaseURL: firstOf(agent.GetModel().GetOpenai().GetBaseUrl(), os.Getenv("JEV_BASE_URL"), defaultBaseURL),
 		Model:   firstOf(agent.GetModel().GetModel(), os.Getenv("JEV_MODEL"), defaultModel),
@@ -73,6 +73,24 @@ func run(logger *slog.Logger) error {
 		return fmt.Errorf("construct A2A app: %w", err)
 	}
 	return application.Run()
+}
+
+// loadBundle reads the agent config and card from Kagent's bootstrap bundle,
+// fetching it into dir on first start.
+func loadBundle(ctx context.Context, getenv func(string) string, dir string) (*configv1.ADKConfig, a2atype.AgentCard, error) {
+	var card a2atype.AgentCard
+	bundle, err := bootstrap.Load(ctx, getenv(contract.Environment), dir, getenv("SSL_CERT_FILE"))
+	if err != nil {
+		return nil, card, fmt.Errorf("load the bootstrap bundle: %w", err)
+	}
+	var cfg configv1.ADKConfig
+	if err := kagentconfig.Unmarshal(bundle.ConfigJson, &cfg); err != nil {
+		return nil, card, fmt.Errorf("decode the agent config: %w", err)
+	}
+	if err := json.Unmarshal(bundle.AgentCardJson, &card); err != nil || card.Name == "" {
+		return nil, card, fmt.Errorf("the bootstrap bundle needs an agent card with a name: %v", err)
+	}
+	return &cfg, card, nil
 }
 
 // runner answers each message on its own. It keeps no conversation.

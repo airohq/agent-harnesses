@@ -1,16 +1,24 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
+	"os"
+	"path/filepath"
 	"testing"
 
+	"google.golang.org/protobuf/proto"
+
 	kagentconfig "github.com/kagent-dev/kagent/go/adk/pkg/config"
+	contract "github.com/kagent-dev/kagent/go/api/bootstrap"
 	configv1 "github.com/kagent-dev/kagent/go/api/gen/kagent/config/v1"
 )
 
-// Checks that the harness finds its settings in the JSON Kagent writes for a
-// BYO harness with an OpenAI ModelConfig.
-func TestConfigReadsKagentBYOConfig(t *testing.T) {
-	data, err := kagentconfig.Marshal(&configv1.ADKConfig{
+// Checks that the harness finds its settings in the bootstrap bundle Kagent
+// builds for a BYO harness with an OpenAI ModelConfig, once the bundle is on
+// the durable volume.
+func TestLoadBundleReadsKagentBYOConfig(t *testing.T) {
+	config, err := kagentconfig.Marshal(&configv1.ADKConfig{
 		Runtime: &configv1.ADKRuntimeConfig{ControlPlaneUrl: "http://kagent-controller.kagent.svc.cluster.local:8083"},
 		Agent: &configv1.ADKAgentConfig{
 			Name:        "judge",
@@ -24,9 +32,41 @@ func TestConfigReadsKagentBYOConfig(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	var cfg configv1.ADKConfig
-	if err := kagentconfig.Unmarshal(data, &cfg); err != nil {
+	revision := "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+	bundle, err := contract.NewBundle(revision, config, []byte(`{"name":"judge"}`))
+	if err != nil {
 		t.Fatal(err)
+	}
+	dir := t.TempDir()
+	raw, err := proto.Marshal(bundle)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "bundle.pb"), raw, 0o600); err != nil {
+		t.Fatal(err)
+	}
+	descriptor, err := json.Marshal(contract.Descriptor{
+		FormatVersion:   contract.FormatVersion,
+		ControlPlaneURL: "http://kagent-controller.kagent.svc.cluster.local:8083",
+		Revision:        revision,
+		SHA256:          bundle.Sha256,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	getenv := func(key string) string {
+		if key == contract.Environment {
+			return string(descriptor)
+		}
+		return ""
+	}
+
+	cfg, card, err := loadBundle(context.Background(), getenv, dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if card.Name != "judge" {
+		t.Errorf("card name = %q", card.Name)
 	}
 	agent := cfg.GetAgent()
 	if got := agent.GetInstruction(); got != "Classify this issue." {
