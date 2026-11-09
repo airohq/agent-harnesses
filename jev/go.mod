@@ -5,6 +5,7 @@ go 1.27.3
 require (
 	github.com/a2aproject/a2a-go/v2 v2.7.0
 	github.com/kagent-dev/kagent/go v0.0.0-20261106154534-3548b7aaf4d9
+	google.golang.org/protobuf v1.36.12
 )
 
 require (
@@ -128,7 +129,6 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20261005182115-fad411399dd8 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20261005182115-fad411399dd8 // indirect
 	google.golang.org/grpc v1.85.0 // indirect
-	google.golang.org/protobuf v1.36.12 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	rsc.io/omap v1.2.0 // indirect
 	rsc.io/ordered v1.1.1 // indirect
