@@ -4,7 +4,7 @@ go 1.27.3
 
 require (
 	github.com/a2aproject/a2a-go/v2 v2.7.0
-	github.com/kagent-dev/kagent/go v0.0.0-20261104170446-4a5c758598a9
+	github.com/kagent-dev/kagent/go v0.0.0-20261106154534-3548b7aaf4d9
 )
 
 require (
@@ -80,7 +80,7 @@ require (
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/tidwall/sjson v1.2.5 // indirect
 	github.com/wk8/go-ordered-map/v2 v2.1.8 // indirect
-	go.ate.dev/substrate v1.0.0-rc2 // indirect
+	go.ate.dev/substrate v1.0.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/contrib/bridges/prometheus v0.72.0 // indirect
 	go.opentelemetry.io/contrib/exporters/autoexport v0.72.0 // indirect
@@ -135,4 +135,4 @@ require (
 )
 
 // Kagent's module pins Agent Substrate to kagent's fork the same way.
-replace go.ate.dev/substrate => github.com/kagent-dev/substrate v1.0.0-rc2
+replace go.ate.dev/substrate => github.com/kagent-dev/substrate v1.0.0
