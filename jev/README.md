@@ -63,7 +63,7 @@ An AgentTemplate that uses the harness names the ModelConfig with
 
 ## Develop
 
-The module pins Kagent to v1.0.0-rc2 and needs Go 1.27.
+The module pins Kagent to v1.0.0-rc3 and needs Go 1.27.
 
 ```sh
 go test ./...                                     # with a fake API
