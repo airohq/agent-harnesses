@@ -36,8 +36,8 @@ Every toolset image also carries Claude Code managed settings
 turn off commit and pull request attribution. Kagent's Claude harness ignores
 user settings, so managed settings are the only place for them.
 
-Git needs nothing from the image: agentic-sdlc configures it in every
-Harness's env (airohq/agentic-sdlc#115).
+Git needs nothing from the image: ADLC configures it in every
+Harness's env (airohq/adlc#115).
 
 The [toolsets workflow](.github/workflows/toolsets.yml) lists the images: a
 name, a toolset and the Kagent harness image it builds on, pinned by digest.
