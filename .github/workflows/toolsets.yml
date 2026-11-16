@@ -25,11 +25,11 @@ jobs:
         include:
           - name: claude-go
             toolset: go
-            harness: ghcr.io/kagent-dev/kagent/claude-harness:1.0.0-rc3@sha256:216613bf155d3d437765675144fee19c9045cb21cd2e481189f2dcae36c24b3b
+            harness: ghcr.io/kagent-dev/kagent/claude-harness:1.0.1@sha256:111d28bc8552469b028d91ecd2352c9d44811aba07be12b1e6868db7948f904e
             check: go version && claude --version && test -r /etc/claude-code/managed-settings.json
           - name: codex-go
             toolset: go
-            harness: ghcr.io/kagent-dev/kagent/codex-harness:1.0.0-rc3@sha256:84c3275e36c0d98472a8b930a628e47e08277e7ce4438908e2a44fd1d8a9efd2
+            harness: ghcr.io/kagent-dev/kagent/codex-harness:1.0.1@sha256:6885f229b4ee70c9babf37f89ef5d93438eab049875e5bc129799fef6e4cfd19
             check: go version && codex --version
     steps:
       - uses: actions/checkout@v7
