@@ -26,8 +26,8 @@ github.com/AzureAD/microsoft-authentication-extensions-for-go/cache v0.1.1 h1:WJ
 github.com/AzureAD/microsoft-authentication-extensions-for-go/cache v0.1.1/go.mod h1:tCcJZ0uHAmvjsVYzEFivsRTN00oz5BEsRgQHu5JZ9WE=
 github.com/AzureAD/microsoft-authentication-library-for-go v1.10.1 h1:0O6j18nQDoIff6/mtosT5LNU2WehEwp+LqfX6699oqY=
 github.com/AzureAD/microsoft-authentication-library-for-go v1.10.1/go.mod h1:xdYAf5bjkOpsd3auA8riiJW4vneBubt9caavL7626jQ=
-github.com/a2aproject/a2a-go/v2 v2.7.0 h1:rwIpzO5O9Mxu/Rm4S2SZfHYzNcvF3FK9aaaTxP35kAo=
-github.com/a2aproject/a2a-go/v2 v2.7.0/go.mod h1:rvFIb0sBJl2qmJRYU2fQxI6hhIQksmGGMEhT/uRwWww=
+github.com/a2aproject/a2a-go/v2 v2.9.0 h1:BmpIVxF1UrB6mmWj1Mg3nFujvLDPWhs8rGEf9QqGbUk=
+github.com/a2aproject/a2a-go/v2 v2.9.0/go.mod h1:UrxIRm1qmHm1kDoEk5PXRHc+4WGw0OEnZFuavMOH+24=
 github.com/agent-substrate/env v0.0.11-0.20261007184417-0d359ea73823 h1:cC9zllwuxLAJnoe5UPh02mIpHdCZUWTFbG/vO0ZUYuc=
 github.com/agent-substrate/env v0.0.11-0.20261007184417-0d359ea73823/go.mod h1:RZ4ACmDqWQx7fgX9b1EaFJskeYTZh1Y7uZinDtp7U2o=
 github.com/anthropics/anthropic-sdk-go v1.84.0 h1:mnAhggc5H5A98JYmhQELT+j4J89PYBFKnnSvUTNwNd8=
