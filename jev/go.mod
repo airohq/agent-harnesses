@@ -3,7 +3,7 @@ module github.com/airohq/agent-harnesses/jev
 go 1.27.3
 
 require (
-	github.com/a2aproject/a2a-go/v2 v2.7.0
+	github.com/a2aproject/a2a-go/v2 v2.9.0
 	github.com/kagent-dev/kagent/go v0.0.0-20261111150159-558e3d761d8e
 	google.golang.org/protobuf v1.36.12
 )
