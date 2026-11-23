@@ -1,0 +1,16 @@
+# Pull requests for new versions of the workflows' actions, jev's Go modules
+# and the images the Dockerfiles build from.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+  - package-ecosystem: gomod
+    directory: /jev
+    schedule:
+      interval: weekly
+  - package-ecosystem: docker
+    directories: ["/jev", "/toolsets/go"]
+    schedule:
+      interval: weekly
